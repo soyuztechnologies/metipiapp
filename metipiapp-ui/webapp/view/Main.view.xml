@@ -1,0 +1,16 @@
+<mvc:View controllerName="com.metis.metipiappui.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <Button press="onClick" text="launch" />
+            <Button press="onClick2" text="launch2" />
+            <Button press="onClick3" text="launch3" />
+            <List items="{/item}">
+                <ObjectListItem title="{CodLibro} {Title}"
+                    intro="{Autore}" number="{CasaEdi}" numberUnit="{LettoSi}" icon="sap-icon://product"
+                ></ObjectListItem>
+            </List>
+        </content>
+    </Page>
+</mvc:View>

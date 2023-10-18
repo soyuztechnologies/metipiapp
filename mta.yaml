@@ -1,0 +1,76 @@
+_schema-version: "3.2"
+ID: metipiapp
+version: 0.0.1
+modules:
+- name: metipiapp-approuter
+  type: approuter.nodejs
+  path: metipiapp-approuter
+  requires:
+  - name: metipiapp_html_repo_runtime
+  - name: uaa_metipiapp
+  - name: metipiapp-destination-service
+  parameters:
+    disk-quota: 256M
+    memory: 256M
+- name: metipiapp_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: metipiapp_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - commetismetipiappui.zip
+      name: commetismetipiappui
+      target-path: resources/
+- name: commetismetipiappui
+  type: html5
+  path: metipiapp-ui
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: metipiapp_html_repo_runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+- name: uaa_metipiapp
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: metipiapp-xsuaa-service
+    service-plan: application
+- name: metipiapp_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+- name: metipiapp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: metipiapp-destination-service
+    service-plan: lite
+parameters:
+  deploy_mode: html5-repo
